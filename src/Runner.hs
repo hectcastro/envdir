@@ -1,6 +1,7 @@
 module Runner where
 
 import           Control.Monad
+import qualified Data.Text          as T
 import           System.Directory
 import           System.FilePath
 import           System.Process
@@ -18,7 +19,10 @@ environmentFiles d = filterM doesFileExist =<< l
   where l = map (d </>) <$> listDirectory d
 
 getEnvironmentFileContents :: IO [FilePath] -> IO [String]
-getEnvironmentFileContents xs = mapM readFile =<< xs
+getEnvironmentFileContents xs = mapM f =<< xs
+  where f x = do
+          v <- readFile x
+          return $ T.unpack . T.strip . T.pack $ v
 
 getEnvironmentFileBaseName :: IO [FilePath] -> IO [String]
 getEnvironmentFileBaseName xs = do
