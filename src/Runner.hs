@@ -12,7 +12,8 @@ import           System.Process
 -- |Runs another program with the environment modified
 -- according to files in a specified directory.
 run :: FilePath -> [String] -> IO (ExitCode, String, String)
-run _ [] = fail "usage: envdir dir child"
+run _ [] =
+  return (ExitFailure 111, "", "envdir: usage: envdir dir child")
 run d (x:xs) = do
   ks <- getEnvironmentFileBaseName fs
   vs <- getEnvironmentFileContents fs

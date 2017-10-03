@@ -19,4 +19,4 @@ install:
 
 script:
   - stack --no-terminal build --haddock
-  - stack exec test env
+  - stack exec envdir test env
