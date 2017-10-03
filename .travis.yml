@@ -18,5 +18,5 @@ install:
   - stack --no-terminal --install-ghc test --only-dependencies
 
 script:
-  - stack --no-terminal build
+  - stack --no-terminal build --haddock
   - stack exec test env
