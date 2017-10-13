@@ -27,8 +27,9 @@ run d (x:xs) = do
 -- |Collects files in a directory and prepends the directory
 -- path to each.
 environmentFiles :: FilePath -> IO [FilePath]
-environmentFiles d = filterM doesFileExist =<< l
-  where l = map (d </>) <$> listDirectory d
+environmentFiles d = do
+  fs <- listDirectory d
+  filterM doesFileExist $ map (d </>) fs
 
 -- |Reads the contents of a list of FilePaths and returns
 -- a list of their contents trimmed of whitespace.
