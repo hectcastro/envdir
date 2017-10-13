@@ -15,12 +15,14 @@ run :: FilePath -> [String] -> IO (ExitCode, String, String)
 run _ [] =
   return (ExitFailure 111, "", "envdir: usage: envdir dir child")
 run d (x:xs) = do
-  ks <- getEnvironmentFileBaseName fs
+  fs <- environmentFiles d
   vs <- getEnvironmentFileContents fs
   e  <- getEnvironment
+
+  let ks = getEnvironmentFileBaseName fs
   let newEnv = M.toList $ M.fromList $ e ++ zip ks vs
+
   readCreateProcessWithExitCode (proc x xs){env = Just newEnv} ""
-  where fs = environmentFiles d
 
 -- |Collects files in a directory and prepends the directory
 -- path to each.
@@ -30,15 +32,13 @@ environmentFiles d = filterM doesFileExist =<< l
 
 -- |Reads the contents of a list of FilePaths and returns
 -- a list of their contents trimmed of whitespace.
-getEnvironmentFileContents :: IO [FilePath] -> IO [String]
-getEnvironmentFileContents xs = mapM f =<< xs
+getEnvironmentFileContents :: [FilePath] -> IO [String]
+getEnvironmentFileContents = mapM f
   where f x = do
           v <- readFile x
           return $ T.unpack . T.strip . T.pack $ v
 
 -- |Extracts the basename of a list of FilePaths and returns
 -- it as a list.
-getEnvironmentFileBaseName :: IO [FilePath] -> IO [String]
-getEnvironmentFileBaseName xs = do
-  fps <- xs
-  return $ map takeBaseName fps
+getEnvironmentFileBaseName :: [FilePath] -> [String]
+getEnvironmentFileBaseName = map takeBaseName
